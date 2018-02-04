@@ -8,7 +8,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -28,5 +28,10 @@ public class AuthenticatorApplnTest {
         String username = "abm";
         String password = "unsafePassword";
         assertTrue(authenticatorAppln.authenticate(username, password));
+
+        verify(authenticator, times(1)).authenticateUser(username, password);
+        verify(authenticator, atLeast(1)).authenticateUser(username, password);
+        verify(authenticator, atLeastOnce()).authenticateUser(username, password);
+        verify(authenticator, atMost(1)).authenticateUser(username, password);
     }
 }
