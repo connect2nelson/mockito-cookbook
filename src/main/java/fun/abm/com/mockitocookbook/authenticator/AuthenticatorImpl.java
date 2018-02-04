@@ -10,6 +10,11 @@ public class AuthenticatorImpl implements Authenticator {
         return false;
     }
 
+    @Override
+    public void canCredentialsBeAuthenticated(String username, String password) throws CannotAuthenicateUserException {
+        throw new CannotAuthenicateUserException();
+    }
+
     public boolean checkWhetherCredentialsAreValid(String username, String password) {
 
         return false;

@@ -15,8 +15,9 @@ public class AuthenticatorAppln {
     }
 
 
-    boolean authenticate(String username, String password) {
+    boolean authenticate(String username, String password) throws CannotAuthenicateUserException {
 
+        authenticator.canCredentialsBeAuthenticated(username, password);
         return authenticator.checkWhetherCredentialsAreValid(username, password)
                 && this.authenticator.authenticateUser(username, password);
 

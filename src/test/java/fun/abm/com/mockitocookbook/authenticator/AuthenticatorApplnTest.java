@@ -22,12 +22,15 @@ public class AuthenticatorApplnTest {
     private AuthenticatorAppln authenticatorAppln;
 
     @Test
-    public void shouldReturnTrueWhenAuthenticationStrategyIsSuccessfull() {
+    public void shouldReturnTrueWhenAuthenticationStrategyIsSuccessfull() throws CannotAuthenicateUserException {
 
         when(authenticator.authenticateUser(anyString(), anyString())).thenReturn(true);
+        when(authenticator.checkWhetherCredentialsAreValid(anyString(), anyString())).thenReturn(true);
+
 
         String username = "abm";
         String password = "unsafePassword";
+
         assertTrue(authenticatorAppln.authenticate(username, password));
 
         verify(authenticator, times(1)).authenticateUser(username, password);
@@ -38,7 +41,7 @@ public class AuthenticatorApplnTest {
 
 
     @Test
-    public void shouldCheckWhetherUsernameAndPasswordIsValidAndThenDoCheckForAuthenication() {
+    public void shouldCheckWhetherUsernameAndPasswordIsValidAndThenDoCheckForAuthenication() throws CannotAuthenicateUserException {
 
         when(authenticator.authenticateUser(anyString(), anyString())).thenReturn(true);
         when(authenticator.checkWhetherCredentialsAreValid(anyString(), anyString())).thenReturn(true);
@@ -57,7 +60,7 @@ public class AuthenticatorApplnTest {
 
 
     @Test(expected = EmptyCredentialsException.class)
-    public void shouldThrowEmptyCredentialsExceptionWhenAuthenticateIsCalledWithEmptyCredentials() {
+    public void shouldThrowEmptyCredentialsExceptionWhenAuthenticateIsCalledWithEmptyCredentials() throws CannotAuthenicateUserException {
 
         String username = "abm";
         String password = "unsafePassword";
@@ -68,6 +71,22 @@ public class AuthenticatorApplnTest {
 
         assertTrue(authenticatorAppln.authenticate(username, password));
 
+    }
+
+    @Test(expected = CannotAuthenicateUserException.class)
+    public void shouldThrowEmptyCredentialsWhenCredentialsAreEmpty() throws CannotAuthenicateUserException {
+
+        String username = "abm";
+        String password = "unsafePassword";
+
+        doThrow(new CannotAuthenicateUserException()).
+                when(authenticator)
+                .canCredentialsBeAuthenticated(anyString(), anyString());
+
+        authenticatorAppln.authenticate(username, password);
+
+        verify(authenticator, times(1)).canCredentialsBeAuthenticated(username, password);
+        verify(authenticator, never()).authenticateUser(username, password);
     }
 
 }
