@@ -9,4 +9,9 @@ public class AuthenticatorImpl implements Authenticator {
     public boolean authenticateUser(String username, String password) {
         return false;
     }
+
+    public boolean checkWhetherCredentialsAreValid(String username, String password) {
+
+        return false;
+    }
 }

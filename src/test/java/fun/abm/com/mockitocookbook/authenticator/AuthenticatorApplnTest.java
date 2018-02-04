@@ -2,6 +2,7 @@ package fun.abm.com.mockitocookbook.authenticator;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -34,4 +35,39 @@ public class AuthenticatorApplnTest {
         verify(authenticator, atLeastOnce()).authenticateUser(username, password);
         verify(authenticator, atMost(1)).authenticateUser(username, password);
     }
+
+
+    @Test
+    public void shouldCheckWhetherUsernameAndPasswordIsValidAndThenDoCheckForAuthenication() {
+
+        when(authenticator.authenticateUser(anyString(), anyString())).thenReturn(true);
+        when(authenticator.checkWhetherCredentialsAreValid(anyString(), anyString())).thenReturn(true);
+
+        String username = "abm";
+        String password = "unsafePassword";
+        InOrder inOrder = inOrder(authenticator);
+
+
+        assertTrue(authenticatorAppln.authenticate(username, password));
+
+        inOrder.verify(authenticator).checkWhetherCredentialsAreValid(username, password);
+        inOrder.verify(authenticator).authenticateUser(username, password);
+
+    }
+
+
+    @Test(expected = EmptyCredentialsException.class)
+    public void shouldThrowEmptyCredentialsExceptionWhenAuthenticateIsCalledWithEmptyCredentials() {
+
+        String username = "abm";
+        String password = "unsafePassword";
+
+        when(authenticator.checkWhetherCredentialsAreValid(anyString(), anyString()))
+                .thenThrow(EmptyCredentialsException.class);
+        when(authenticator.authenticateUser(anyString(), anyString())).thenReturn(true);
+
+        assertTrue(authenticatorAppln.authenticate(username, password));
+
+    }
+
 }
